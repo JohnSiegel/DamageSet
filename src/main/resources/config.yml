@@ -1,0 +1,39 @@
+item-display-names:
+  helmet: '&8[&4Damage&8] &cHelmet'
+  chestplate: '&8[&4Damage&8] &cChestplate'
+  leggings: '&8[&4Damage&8] &cLeggings'
+  boots: '&8[&4Damage&8] &cBoots'
+
+item-lore:
+  - '&7Deal &c$damage-buff-percent$% &7more damage when'
+  - '&7this set is fully equipped.'
+
+damage-buff-percent: 5
+
+# IMPORTANT: THE ENCHANTMENT SECTION SHOULD NOT BE DELETED.
+# IF YOU WISH FOR ITEMS TO HAVE NO ENCHANTMENTS, COPY THE
+# EXAMPLE BELOW
+#
+# default-item-enchantments:
+#   helmet: []
+#   chestplate: []
+#   leggings: []
+#   boots: []
+
+default-item-enchantments:
+  helmet:
+    - PROTECTION_ENVIRONMENTAL 4
+    - DURABILITY 3
+  chestplate:
+    - PROTECTION_ENVIRONMENTAL 4
+    - DURABILITY 3
+  leggings:
+    - PROTECTION_ENVIRONMENTAL 4
+    - DURABILITY 3
+  boots:
+    - PROTECTION_ENVIRONMENTAL 4
+    - DURABILITY 3
+    - DEPTH_STRIDER 3
+
+equip-message: '&7You have equipped the &cDamage Set&7.'
+unequip-message: '&7You have unequipped the &cDamage Set&7.'

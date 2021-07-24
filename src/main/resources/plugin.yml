@@ -1,0 +1,14 @@
+name: DamageSet
+version: ${project.version}
+main: com.sosa.damageset.DamageSet
+authors: [ Sosa ]
+description: Custom armor set that gives a damage buff.
+commands:
+  ds:
+    description: Used to give a damage set to a player.
+    usage: ds give {player} [helmet/chestplate/leggings/boots]
+    aliases:
+      - damageset
+      - dmgset
+    permission: damageset.give
+    permission-message: You do not have permission to do this!
