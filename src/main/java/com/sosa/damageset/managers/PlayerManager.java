@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class PlayerManager {
 
-    private static final ArrayList<UUID> equippedPlayers = new ArrayList<>();
+    private static final ArrayList<UUID> buffedPlayers = new ArrayList<>();
 
     public static void updatePlayerBuff(Player player) {
         ItemStack[] equipment = player.getEquipment().getArmorContents();
@@ -26,22 +26,21 @@ public class PlayerManager {
     }
 
     public static void activateBuff(Player player) {
-        if (!equippedPlayers.contains(player.getUniqueId())) {
-            equippedPlayers.add(player.getUniqueId());
+        if (!buffedPlayers.contains(player.getUniqueId())) {
+            buffedPlayers.add(player.getUniqueId());
             player.sendMessage(Settings.getEquipMessage());
         }
     }
 
     public static void deactivateBuff(Player player) {
-        if (equippedPlayers.contains(player.getUniqueId())) {
-            equippedPlayers.remove(player.getUniqueId());
+        if (buffedPlayers.contains(player.getUniqueId())) {
+            buffedPlayers.remove(player.getUniqueId());
             player.sendMessage(Settings.getUnequipMessage());
         }
     }
 
-    public static boolean isBuffed(UUID uuid)
-    {
-        return equippedPlayers.contains(uuid);
+    public static boolean isBuffed(UUID uuid) {
+        return buffedPlayers.contains(uuid);
     }
 
 }

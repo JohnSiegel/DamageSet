@@ -7,100 +7,90 @@ import java.lang.reflect.Method;
 
 public class NBTHelper {
 
+    public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
     private static final String NBT_TAG_KEY = "custom_set";
     private static final String NBT_TAG_DAMAGE_SET_VALUE = "damage";
-
-    private static Class nbtTagCompoundClass;
-    private static Class nbtTagStringClass;
-
-    private static Method asNMSCopy;
-    private static Method asBukkitCopy;
-    private static Method hasTag;
-    private static Method getTag;
-    private static Method setTag;
-    private static Method compoundSetString;
-    private static Method compoundGetString;
-
-    @SuppressWarnings("all")
-    public static void setup() {
-        try {
-            Class craftItemStackClass = Class.forName("org.bukkit.craftbukkit." +
-                    Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] +
-                    ".inventory.CraftItemStack");
-
-            Class nmsItemStackClass = Class.forName("net.minecraft.server." +
-                    Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] +
-                    ".ItemStack");
-
-            nbtTagCompoundClass = Class.forName("net.minecraft.server." +
-                    Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] +
-                    ".NBTTagCompound");
-
-            nbtTagStringClass = Class.forName("net.minecraft.server." +
-                    Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] +
-                    ".NBTTagString");
-
-            asNMSCopy = craftItemStackClass.getDeclaredMethod("asNMSCopy", ItemStack.class);
-
-            asBukkitCopy = craftItemStackClass.getDeclaredMethod("asBukkitCopy", nmsItemStackClass);
-
-            hasTag = nmsItemStackClass.getDeclaredMethod("hasTag");
-
-            getTag = nmsItemStackClass.getDeclaredMethod("getTag");
-
-            compoundSetString = nbtTagCompoundClass.getDeclaredMethod("set", String.class,
-                    nbtTagStringClass.getSuperclass());
-
-            compoundGetString = nbtTagCompoundClass.getDeclaredMethod("getString", String.class);
-
-            setTag = nmsItemStackClass.getDeclaredMethod("setTag", nbtTagCompoundClass);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @SuppressWarnings("all")
     public static ItemStack applyNBT(ItemStack itemStack) {
         try {
-            Object copyStack = asNMSCopy.invoke(null, itemStack);
+            Object copyStack = Methods.CRAFT_ITEM_STACK_AS_NMS_COPY.method.invoke(null, itemStack);
 
-            Object nbtTagCompound = (boolean) hasTag.invoke(copyStack) ? getTag.invoke(copyStack) :
-                    nbtTagCompoundClass.getConstructor().newInstance();
+            Object nbtTagCompound = (boolean) Methods.NMS_ITEM_STACK_HAS_TAG.method.invoke(copyStack) ?
+                    Methods.NMS_ITEM_STACK_GET_TAG.method.invoke(copyStack) :
+                    Classes.NBT_TAG_COMPOUND.clazz.getConstructor().newInstance();
 
-            compoundSetString.invoke(nbtTagCompound,
-                    NBT_TAG_KEY, nbtTagStringClass.getConstructor(String.class)
+            Methods.NBT_TAG_COMPOUND_SET.method.invoke(nbtTagCompound,
+                    NBT_TAG_KEY, Classes.NBT_TAG_STRING.clazz.getConstructor(String.class)
                             .newInstance(NBT_TAG_DAMAGE_SET_VALUE));
 
-            setTag.invoke(copyStack, nbtTagCompound);
+            Methods.NMS_ITEM_STACK_SET_TAG.method.invoke(copyStack, nbtTagCompound);
 
-            return (ItemStack) asBukkitCopy.invoke(null, copyStack);
+            return (ItemStack) Methods.CRAFT_ITEM_STACK_AS_BUKKIT_COPY.method.invoke(null, copyStack);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static boolean isDamageSetPiece(ItemStack itemStack)
-    {
+    public static boolean isDamageSetPiece(ItemStack itemStack) {
         try {
-            Object copyStack = asNMSCopy.invoke(null, itemStack);
+            Object copyStack = Methods.CRAFT_ITEM_STACK_AS_NMS_COPY.method.invoke(null, itemStack);
 
             if (copyStack == null) {
                 return false;
             }
 
-            if (!(boolean) hasTag.invoke(copyStack))
-            {
+            if (!(boolean) Methods.NMS_ITEM_STACK_HAS_TAG.method.invoke(copyStack)) {
                 return false;
             }
 
-            Object nbtTagCompound = getTag.invoke(copyStack);
+            Object nbtTagCompound = Methods.NMS_ITEM_STACK_GET_TAG.method.invoke(copyStack);
 
-            return compoundGetString.invoke(nbtTagCompound, NBT_TAG_KEY).equals(NBT_TAG_DAMAGE_SET_VALUE);
-        } catch (Exception e)
-        {
+            return Methods.NBT_TAG_COMPOUND_GET_STRING.method.invoke(nbtTagCompound, NBT_TAG_KEY)
+                    .equals(NBT_TAG_DAMAGE_SET_VALUE);
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private enum Classes {
+        NBT_TAG_COMPOUND("net.minecraft.server." + NMS_VERSION + ".NBTTagCompound"),
+        NBT_TAG_STRING("net.minecraft.server." + NMS_VERSION + ".NBTTagString"),
+        CRAFT_ITEM_STACK("org.bukkit.craftbukkit." + NMS_VERSION + ".inventory.CraftItemStack"),
+        NMS_ITEM_STACK("net.minecraft.server." + NMS_VERSION + ".ItemStack");
+
+        private Class<?> clazz;
+
+        Classes(String className) {
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private enum Methods {
+        CRAFT_ITEM_STACK_AS_NMS_COPY(Classes.CRAFT_ITEM_STACK.clazz, "asNMSCopy", ItemStack.class),
+        CRAFT_ITEM_STACK_AS_BUKKIT_COPY(Classes.CRAFT_ITEM_STACK.clazz, "asBukkitCopy",
+                Classes.NMS_ITEM_STACK.clazz),
+        NMS_ITEM_STACK_HAS_TAG(Classes.NMS_ITEM_STACK.clazz, "hasTag"),
+        NMS_ITEM_STACK_GET_TAG(Classes.NMS_ITEM_STACK.clazz, "getTag"),
+        NMS_ITEM_STACK_SET_TAG(Classes.NMS_ITEM_STACK.clazz, "setTag", Classes.NBT_TAG_COMPOUND.clazz),
+        NBT_TAG_COMPOUND_SET(Classes.NBT_TAG_COMPOUND.clazz, "set",
+                String.class, Classes.NBT_TAG_STRING.clazz.getSuperclass()),
+        NBT_TAG_COMPOUND_GET_STRING(Classes.NBT_TAG_COMPOUND.clazz, "getString", String.class);
+
+        private Method method;
+
+        Methods(Class<?> clazz, String methodName, Class<?>... typeArgs) {
+            try {
+                method = clazz.getDeclaredMethod(methodName, typeArgs);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
         }
     }
 

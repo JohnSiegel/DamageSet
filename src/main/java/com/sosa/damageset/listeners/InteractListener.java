@@ -10,16 +10,11 @@ import org.bukkit.inventory.ItemStack;
 public class InteractListener implements Listener {
 
     @EventHandler
-    public void playerInteractEvent(PlayerInteractEvent e)
-    {
+    public void playerInteractEvent(PlayerInteractEvent e) {
         ItemStack item = e.getItem();
 
-        if (item != null && item.getType().name().startsWith("DIAMOND_"))
-        {
-            DamageSet.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DamageSet.getInstance(), () -> {
-                PlayerManager.updatePlayerBuff(e.getPlayer());
-            }, 1L);
+        if (item != null && item.getType().name().startsWith("DIAMOND_")) {
+            DamageSet.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DamageSet.getInstance(), () -> PlayerManager.updatePlayerBuff(e.getPlayer()), 1L);
         }
     }
-
 }

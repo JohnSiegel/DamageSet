@@ -9,12 +9,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class AttackListener implements Listener {
 
     @EventHandler
-    public void entityAttackEvent(EntityDamageByEntityEvent e)
-    {
-        if (PlayerManager.isBuffed(e.getDamager().getUniqueId()))
-        {
+    public void entityAttackEvent(EntityDamageByEntityEvent e) {
+        if (PlayerManager.isBuffed(e.getDamager().getUniqueId())) {
             e.setDamage(e.getDamage() + (e.getDamage() * (Settings.getDamageBuff() / 100.0)));
         }
     }
-
 }

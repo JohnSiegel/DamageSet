@@ -17,13 +17,8 @@ public class ArmorSwapListener implements Listener {
 
         if ((clickedItem != null && clickedItem.getType().name().startsWith("DIAMOND_")) ||
                 (cursorItem != null && cursorItem.getType().name().startsWith("DIAMOND_"))) {
-            DamageSet.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DamageSet.getInstance(), () -> {
-
-                Player player = (Player) e.getInventory().getHolder();
-
-                PlayerManager.updatePlayerBuff(player);
-            }, 1L);
+            DamageSet.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(DamageSet.getInstance(),
+                    () -> PlayerManager.updatePlayerBuff((Player) e.getInventory().getHolder()), 1L);
         }
     }
-
 }
