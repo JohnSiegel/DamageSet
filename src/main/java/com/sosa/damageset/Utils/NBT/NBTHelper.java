@@ -11,7 +11,6 @@ public class NBTHelper {
     private static final String NBT_TAG_KEY = "custom_set";
     private static final String NBT_TAG_DAMAGE_SET_VALUE = "damage";
 
-    @SuppressWarnings("all")
     public static ItemStack applyNBT(ItemStack itemStack) {
         try {
             Object copyStack = Methods.CRAFT_ITEM_STACK_AS_NMS_COPY.method.invoke(null, itemStack);
